@@ -36,6 +36,7 @@ table{background-color: #4bd5ed}*/
 pre{
   white-space: pre-wrap;
   font-size: 12px;
+  overflow: auto;
 }
 
 
