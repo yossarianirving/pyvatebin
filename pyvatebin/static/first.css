@@ -40,7 +40,7 @@ pre{
 }
 
 
-textarea, pre {
+textarea, pre.formated {
   border: none; width: 720px;
   resize: none;
   background: rgb(251, 255, 219);

@@ -37,11 +37,26 @@ def showpaste(pasteid):
     idAsInt = int(pasteid, 16)
     db = get_db()
     print(idAsInt)
-
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-
-    print(cur)
     return render_template('showpaste.html', entry=cur)
+
+@app.route('/raw/<pasteid>')
+def rawpaste(pasteid):
+    idAsInt = int(pasteid, 16)
+    db = get_db()
+    print(idAsInt)
+    cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
+    return render_template('rawpaste.html', entry=cur), {'Content-Type': 'text/plain'}
+
+# might be a horrible idea
+# Or might not work
+@app.route('/html/<pasteid>')
+def htmlpaste(pasteid):
+    idAsInt = int(pasteid, 16)
+    db = get_db()
+    print(idAsInt)
+    cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
+    return render_template('htmlpaste.html', entry=cur)
 '''
 Move all below this to another file eventually
 '''
