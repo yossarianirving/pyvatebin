@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    {% if title %}
+        <title>{{title}}</title>
+    {% else %}
+        <title>Pyvatebin</title>
+    {% endif %}
+    <link rel="stylesheet" href="static/first.css">
+  </head>
+  <body>
+    <a href="/" class='button'>New Paste</a>
+  </body>
+  {% block content %}{% endblock %}
+
+</html>

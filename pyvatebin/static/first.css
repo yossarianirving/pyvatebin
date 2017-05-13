@@ -1,0 +1,75 @@
+a.button {
+  text-decoration: none;
+  background-color: #5057ff;
+  color: #FFF;
+  padding: 3px 8px 3px 8px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+.button:hover{
+  box-shadow: 1px 1px #888888;
+  position: relative;
+  right: 2px;
+  bottom: 2px;
+}
+
+body{
+  margin:40px auto;max-width: 700px;
+  line-height: 1.6; font-size: 18px;
+  padding: 0 10px;
+  font-family: "Open Sans", Ariel;
+  color: #555
+}
+html{background: #fafafa}
+iframe{
+    border:none;
+    width:400px;
+    display:block;
+}
+/*table, th, tr, td{
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: left;
+}
+th, td{padding: 5px;}
+table{background-color: #4bd5ed}*/
+pre{
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+
+
+textarea, pre {
+  border: none; width: 720px;
+  resize: none;
+  background: rgb(251, 255, 219);
+  /*text-col*/
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  box-shadow: 1px 2px 4px 1px #888888;
+}
+
+/*.paste{
+  background: #eee;
+  width: 100%;
+}*/
+
+input[type=submit] {
+   background-color: #5057ff;
+   color: white;
+   padding: 3px 23px 3px 24px;
+   margin:  8px 0;
+   border: none;
+   border-radius: 5px;
+   display: block;
+   font-size: 18px;
+   font-family: "Open Sans", Ariel;
+ }
+
+ input[type=submit]:hover{
+  box-shadow: 1px 1px #888888;
+  position: relative;
+  right: 2px;
+  bottom: 2px;
+
+ }

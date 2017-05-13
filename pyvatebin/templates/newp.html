@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<form action="" method="post" name="NewPaste">
+  {{ form.hidden_tag() }}
+<input type="submit" value="Submit"><br>
+<!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
+{{ form.pasteText(rows='40')}}
+</form>
+
+
+{% endblock %}
