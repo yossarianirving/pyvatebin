@@ -3,6 +3,8 @@ import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from .myForms import NewPaste
 import uuid
+import lxml
+from lxml.html.clean import Cleaner
 
 URL = '127.0.0.1:5000/'
 app = Flask(__name__)
@@ -50,16 +52,40 @@ def rawpaste(pasteid):
 
 # might be a horrible idea
 # Or might not work
-@app.route('/html/<pasteid>')
+@app.route('/html-with-js/<pasteid>', methods=['POST', 'GET'])
 def htmlpaste(pasteid):
+    if request.method == 'POST':
+        print(request)
+        if request.form['action'] == 'confirmed':
+            print('wtf')
+            idAsInt = int(pasteid, 16)
+            db = get_db()
+            print(idAsInt)
+            cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
+            print(cur)
+            return render_template('htmlpaste.html', entry=cur['paste_text'])
+        else:
+            print('he')
+    elif request.method == 'GET':
+        return render_template('yousure.html', pid=pasteid)
+    else:
+        print('not valid')
+'''
+Move all below this to another file eventually
+Possibly add conformation for javascript
+'''
+@app.route('/html/<pasteid>')
+def html_no_jspaste(pasteid):
+    cleaner = Cleaner()
+    cleaner.javascript = True
     idAsInt = int(pasteid, 16)
     db = get_db()
     print(idAsInt)
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    return render_template('htmlpaste.html', entry=cur)
-'''
-Move all below this to another file eventually
-'''
+    no_js = cleaner.clean_html(cur['paste_text'])
+    print(no_js)
+    return render_template('htmlpaste.html', entry=no_js)
+
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
