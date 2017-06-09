@@ -7,10 +7,11 @@ a.button {
   font-size: 18px;
 }
 .button:hover{
-  box-shadow: 1px 1px #888888;
+  /*box-shadow: 1px 1px #888888;*/
+  background-color: #31359e;
   position: relative;
-  right: 2px;
-  bottom: 2px;
+  /*right: 2px;
+  bottom: 2px;*/
 }
 
 body{
@@ -18,7 +19,7 @@ body{
   line-height: 1.6; font-size: 18px;
   padding: 0 10px;
   font-family: "Open Sans", Ariel;
-  color: #555
+  color: #555;
 }
 html{background: #fafafa}
 iframe{
@@ -35,19 +36,20 @@ th, td{padding: 5px;}
 table{background-color: #4bd5ed}*/
 pre{
   white-space: pre-wrap;
-  font-size: 12px;
+  /*font-size: 12px;*/
   overflow: auto;
 }
 
 
-textarea, pre.formated {
+textarea, .formated {
   border: none; width: 720px;
   resize: none;
   background: rgb(251, 255, 219);
-  /*text-col*/
+  font-size: 15px;
   color: rgb(0, 0, 0);
   border-radius: 5px;
   box-shadow: 1px 2px 4px 1px #888888;
+  padding: 5px;
 }
 
 /*.paste{
@@ -67,10 +69,13 @@ input[type=submit] {
    font-family: "Open Sans", Ariel;
  }
 
- input[type=submit]:hover{
+ /*input[type=submit]:hover{
   box-shadow: 1px 1px #888888;
   position: relative;
   right: 2px;
   bottom: 2px;
 
+ }*/
+ form {
+   display: inline
  }
