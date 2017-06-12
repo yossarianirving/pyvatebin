@@ -1,4 +1,4 @@
-a.button {
+.button {
   text-decoration: none;
   background-color: #5057ff;
   color: #FFF;
@@ -42,14 +42,14 @@ pre{
 
 
 textarea, .formated {
-  border: none; width: 720px;
+  border: none; width: 100%;
   resize: none;
   background: rgb(251, 255, 219);
   font-size: 15px;
   color: rgb(0, 0, 0);
   border-radius: 5px;
   box-shadow: 1px 2px 4px 1px #888888;
-  padding: 5px;
+  /*padding: 5px;*/
 }
 
 /*.paste{
@@ -61,12 +61,13 @@ input[type=submit] {
    background-color: #5057ff;
    color: white;
    padding: 3px 23px 3px 24px;
-   margin:  8px 0;
+   /*margin:  0px -5px;*/
    border: none;
    border-radius: 5px;
-   display: block;
+   display: inline;
    font-size: 18px;
    font-family: "Open Sans", Ariel;
+   float: right;
  }
 
  /*input[type=submit]:hover{
@@ -77,5 +78,5 @@ input[type=submit] {
 
  }*/
  form {
-   display: inline
+   display: inline;
  }
