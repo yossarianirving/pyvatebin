@@ -45,7 +45,7 @@ def showpaste(pasteid):
     db = get_db()
     print(idAsInt)
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    return render_template('showpaste.html', entry=cur)
+    return render_template('showpaste.html', entry=cur, pid=pasteid)
 
 
 @app.route('/raw/<pasteid>')
