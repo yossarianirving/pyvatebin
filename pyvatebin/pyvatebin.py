@@ -1,13 +1,13 @@
 import os
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
 from .myForms import NewPaste
 import uuid
 import lxml
 from lxml.html.clean import Cleaner
 
 # Some of this should be moved to another file
-URL = '127.0.0.1:5000/'
+URL = '127.0.0.1:5000/'  # like this
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -17,6 +17,12 @@ app.config.update(dict(
     RF_ENABLED=True,
 ))
 app.config.from_envvar('PYVATEBIN_SETTINGS', silent=True)
+
+
+@app.route('/favicon.ico')  # adds favicon. removes an error
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.route('/', methods=['POST', 'GET'])
