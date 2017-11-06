@@ -1,14 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="dropdown">
+<!-- <div class="dropdown">
  <button class="button">Render as</button>
  <div class="dropdown-content">
    <a href="/html/{{pid}}">html</a>
    <a href="/html-with-js/{{pid}}">html with js</a>
    <a href="/raw/{{pid}}">raw</a>
  </div>
-</div>
+</div> -->
+
 <br>
-<pre class="formated">{{ entry.paste_text }}</pre>
+<pre class="formated" id="decpaste">…☭</pre>
 <br>
+<script type="text/javascript">
+    var hashkey = window.location.hash.substr(1);
+    decrypt({{entry.paste_text|tojson|safe}}, unescape(hashkey), {{entry.nonce|tojson|safe}});
+</script>
 {% endblock %}
