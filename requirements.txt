@@ -6,5 +6,7 @@ itsdangerous==0.24
 Jinja2==2.9.6
 lxml==3.8.0
 MarkupSafe==1.0
+pkg-resources==0.0.0
+-e git+git@github.com:yossarianirving/pyvatebin.git@651199ba7f5cc8c2b2774467301bbf65b14ecbd7#egg=pyvatebin
 Werkzeug==0.12.1
 WTForms==2.1

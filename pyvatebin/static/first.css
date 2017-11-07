@@ -4,6 +4,8 @@
   color: #FFF;
   border: none;
   padding: 3px 8px 3px 8px;
+  font-size: 18px;
+  font-family: "Open Sans", Ariel;
   border-radius: 5px;
   font-size: 18px;
 }
@@ -58,17 +60,18 @@ textarea, .formated {
   width: 100%;
 }*/
 
-input[type=submit] {
+.submit {
    background-color: #5057ff;
    color: white;
    padding: 3px 23px 3px 24px;
-   /*margin:  0px -5px;*/
+   margin:  0px -5px;
    border: none;
    border-radius: 5px;
    display: inline;
    font-size: 18px;
    font-family: "Open Sans", Ariel;
    float: right;
+   font-weight: normal;
  }
 
  /*input[type=submit]:hover{
