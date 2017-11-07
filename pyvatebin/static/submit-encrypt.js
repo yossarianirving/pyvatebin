@@ -75,11 +75,19 @@ function getFormData($form){
 
 function decrypt(encryptedPaste, key, iv) {
     console.log("Decrypting");
-    var decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({iv: iv});
-    decipher.update(forge.util.createBuffer(JSON.parse(encryptedPaste)));
-    var result = decipher.finish()
-    var pastetxt = decipher.output.data;
-    document.getElementById('decpaste').innerHTML = pastetxt;
-
+    try {
+        var decipher = forge.cipher.createDecipher('AES-CBC', key);
+        decipher.start({iv: iv});
+        decipher.update(forge.util.createBuffer(JSON.parse(encryptedPaste)));
+        var result = decipher.finish()
+        var pastetxt = decipher.output.data;
+    }
+    catch (err) {
+        console.log(err);
+        return;
+    }
+    // document.getElementById('decpaste').innerHTML = pastetxt;
+    $(document).ready(function(){
+        $("#decpaste").text(pastetxt);
+    });
 }

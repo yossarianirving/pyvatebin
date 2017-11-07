@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory, jsonify
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory, jsonify, abort
 from .myForms import NewPaste
 import uuid
 import lxml
@@ -53,7 +53,11 @@ def showpaste(pasteid):
     db = get_db()
     print(idAsInt)
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    return render_template('showpaste.html', entry=cur, pid=pasteid)
+    if cur is not None:
+        return render_template('showpaste.html', entry=cur, pid=pasteid)
+    else:
+        print("not found")
+        abort(404)
 
 
 @app.route('/submit', methods=['POST'])
