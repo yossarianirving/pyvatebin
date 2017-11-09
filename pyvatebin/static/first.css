@@ -10,7 +10,7 @@
   font-size: 18px;
 }
 
-.submit:hover.button:hover{
+.submit:hover, .button:hover{
   /*box-shadow: 1px 1px #888888;*/
   background-color: #31359e;
   position: relative;
