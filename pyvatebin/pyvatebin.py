@@ -29,20 +29,6 @@ def favicon():
 @app.route('/', methods=['POST', 'GET'])
 def mainPage():
     form = NewPaste()
-    '''
-    db = get_db()
-    if form.validate_on_submit():  # When paste is submitted
-        # Creates random 64 bit int
-        idAsInt = uuid.uuid4().int >> 65
-        db.execute('insert into pastes (id, paste_text, nonce) values (?, ?, ?)', [idAsInt, request.form['pasteText'], request.form['nonce']])
-        db.commit()  # add text to sqlite3 db
-        print(idAsInt)  # next two lines for testing
-        print('url:', hex(idAsInt)[2:])
-        # int id turns to hex for shorter url. first two bytes taken out
-        return render_template('postsub.html', text=request.form['pasteText'], paste_url=hex(idAsInt)[2:], new_url=URL)
-    else:
-        print(form.errors)
-    '''
     return render_template('newp.html', form=form)
 
 
@@ -71,51 +57,6 @@ def submit():
         db.execute('insert into pastes (id, paste_text, nonce) values (?, ?, ?)', [idAsInt, form['pasteText'], form['nonce']])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
-
-
-# This does not currently work with the encryption. It would have to
-# be done with JavaScript
-'''
-@app.route('/raw/<pasteid>')
-def rawpaste(pasteid):
-    idAsInt = int(pasteid, 16)
-    db = get_db()
-    print(idAsInt)
-    cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    # text plain allows for raw paste: could combine this w/ normal.
-    return render_template('rawpaste.html', entry=cur), {'Content-Type': 'text/plain'}
-
-# might be a horrible idea
-# Or might not work
-
-
-@app.route('/html-with-js/<pasteid>', methods=['POST', 'GET'])
-def htmlpaste(pasteid):
-    if request.method == 'POST':  # after conformation
-        if request.form['action'] == 'continue':
-            idAsInt = int(pasteid, 16)  # normal from here
-            db = get_db()
-            # print(idAsInt)
-            cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-            # print(cur)
-            return render_template('htmlpaste.html', entry=cur['paste_text'])
-    elif request.method == 'GET':
-        return render_template('yousure.html', pid=pasteid)
-    else:
-        print('not valid')
-
-
-@app.route('/html/<pasteid>')
-def html_no_jspaste(pasteid):
-    cleaner = Cleaner()  # cleans out the javascript for security
-    cleaner.javascript = True
-    idAsInt = int(pasteid, 16)
-    db = get_db()
-    # print(idAsInt)
-    cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    no_js = cleaner.clean_html(cur['paste_text'])
-    return render_template('htmlpaste.html', entry=no_js)
-'''
 
 
 def connect_db():
