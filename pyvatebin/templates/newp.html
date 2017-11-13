@@ -4,7 +4,7 @@
   {{ form.hidden_tag() }}
 <input onclick="subenc(); this.disabled=true"
     value="Submit" class="submit" type="button" ><br><br>
-    <a style="display: none" id="link" href="#"></a>
+    <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
 <!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
 {{ form.pasteText(rows='40', onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}", readonly=false, id="text")}}
 <!-- Should be in a separate file-->
