@@ -37,13 +37,15 @@ def mainPage():
 
 @app.route('/<pasteid>')
 def showpaste(pasteid):
+    # form is for the clone feature.
+    form = NewPaste()
     # Convert hex to int and retrieve from database
     idAsInt = int(pasteid, 16)
     db = get_db()
     print(idAsInt)
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
     if cur is not None:
-        return render_template('showpaste.html', entry=cur, pid=pasteid)
+        return render_template('showpaste.html', entry=cur, pid=pasteid, form=form)
     else:
         print("not found")
         abort(404)

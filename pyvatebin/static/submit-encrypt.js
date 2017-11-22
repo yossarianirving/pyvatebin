@@ -38,6 +38,7 @@ function subenc() {
         console.log("We did it");
         console.log(response);
         $("#text").prop("disabled", true);
+        $("#text").prop("rows", '')
         link = document.getElementById('link');
         link.innerHTML = window.location.href+response['id']+"#"+escape(key);
         link.href = response['id']+"#"+escape(key);
@@ -90,4 +91,15 @@ function decrypt(encryptedPaste, key, iv) {
     $(document).ready(function(){
         $("#decpaste").text(pastetxt);
     });
+}
+
+function clone() {
+    document.getElementById('submission').elements['pasteText'].innerHTML =
+        document.getElementById('decpaste').innerHTML;
+
+    document.getElementById('decpaste').style.display = "none";
+    document.getElementById('text').style.display = "block";
+    document.getElementById('clone').style.display = "none";
+    document.getElementById('submit').style.display = "block";
+
 }
