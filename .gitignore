@@ -103,3 +103,6 @@ ENV/
 pathset.sh
 pyvatebin.egg-info
 *.db
+
+# vs code
+*.code-workspace

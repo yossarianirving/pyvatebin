@@ -18,6 +18,6 @@
 <!-- yes, inline script is bad -->
 <script type="text/javascript">
     var hashkey = window.location.hash.substr(1);
-    decrypt({{entry.paste_text|tojson|safe}}, unescape(hashkey), {{entry.nonce|tojson|safe}});
+    decrypt({{ entry.paste_text|tojson|safe }}, unescape(hashkey), {{ entry.nonce|tojson|safe }});
 </script>
 {% endblock %}

@@ -11,7 +11,6 @@ import json
 from lxml.html.clean import Cleaner
 
 # Some of this should be moved to another file
-URL = '127.0.0.1:5000/'  # like this
 app = Flask(__name__)
 app.config.from_object(__name__)
 
