@@ -103,3 +103,8 @@ function clone() {
     document.getElementById('submit').style.display = "block";
 
 }
+
+function download() {
+    var link = document.getElementById('dwnld');
+    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(pastetxt));
+}
