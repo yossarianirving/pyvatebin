@@ -91,6 +91,9 @@ function decrypt(encryptedPaste, key, iv) {
     $(document).ready(function(){
         $("#decpaste").text(pastetxt);
     });
+    console.log(pastetxt);
+    download(pastetxt);
+
 }
 
 function clone() {
@@ -104,7 +107,12 @@ function clone() {
 
 }
 
-function download() {
+function download(pastetext) {
     var link = document.getElementById('dwnld');
-    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(pastetxt));
+    console.log("please work");
+    console.log(pastetext);
+    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+        encodeURIComponent(pastetext));
+
+    link.setAttribute('dwnld', "paste.txt");
 }
