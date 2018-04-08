@@ -15,6 +15,8 @@
 * Burn after reading.
 * Delete after set amount of time.
 * Normal, raw and HTML page rendering.
+* WebCrypto as the cryptographic interface.
+* Pure Vanilla JS
 
 # Improvements needed
 
