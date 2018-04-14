@@ -1,26 +1,39 @@
 function subenc() {
+  var promiseKey = crypto.subtle.generateKey({name: "AES-GCM", length: 256}, true, ['encrypt']);
+  console.log(promiseKey);
+  promiseKey.then(function(value) {
+    console.log(value);
+    encryptSubmit(value)
+  });
+}
+
+function encryptSubmit(key) {
     // create key and iv
-    var key = forge.random.getBytesSync(16);
-    var iv =  forge.random.getBytesSync(16);
     var forme = document.getElementById('submission');
     // storing initialization vector as 'nonce'. yeah I know
-    document.getElementById('nonce').value = iv;
-    var jdata = {};// json data that will be used in ajax
-    jdata.nonce = iv;
+    var pasteToEncrypt = forme.elements["pasteText"].value;
+    var pasteUtf = new TextEncoder().encode(pasteToEncrypt);
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var nonce = JSON.stringify(iv);
+    document.getElementById('nonce').value = nonce;
+    var algorithm = { name: 'AES-GCM', iv: iv};
+    // var encrypted = crypto.subtle.encrypt(algorithm, key, pasteUtf);
+    var jdata = {"nonce": nonce};// json data that will be used in ajax
     // encrypting the text
-    var pasteContent = forme.elements["pasteText"].value;
-    var cipher = forge.cipher.createCipher('AES-CBC', key);
-    cipher.start({iv: iv});
-    cipher.update(forge.util.createBuffer(
-        pasteContent));
-    cipher.finish();
-    var encrypted = cipher.output;
-    encrypted.push
-    // stores encrypted text
-    jdata.pasteText = JSON.stringify(encrypted);
-    var csrf_token = forme.elements["csrf_token"].value;
-    forme.elements["pasteText"].value = pasteContent;
+    crypto.subtle.encrypt(algorithm, key, pasteUtf).then(function(res) {
+      jdata.pasteText = JSON.stringify(new Uint8Array(res));
+      crypto.subtle.exportKey('jwk', key).then(function(x){
+        sendPaste(jdata, x.k);
+      });
+    });
+
+
+}
+
+function sendPaste(jdata, key) {
+  var forme = document.getElementById('submission');
     // inserts crsf token into headers of ajax request
+    var csrf_token = forme.elements["csrf_token"].value;
     $.ajaxSetup({
        beforeSend: function(xhr, settings) {
            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
@@ -41,7 +54,7 @@ function subenc() {
         $("#text").prop("rows", '')
         link = document.getElementById('link');
         link.innerHTML = window.location.href+response['id']+"#"+escape(key);
-        link.href = response['id']+"#"+escape(key);
+        link.href = response['id']+"#"+escape(jsonKey);
         link.style.display = "block";
     },
     error: function (result) {
@@ -50,38 +63,27 @@ function subenc() {
     }
     });
     // testenc(encrypted, key, iv);
+    console.log("at end");
 }
 
-console.log("Check 1… 2… ☭");
 
-function testenc(encrypted, key, iv){
-    console.log("Decrypting...");
-    var decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({iv: iv});
-    decipher.update(encrypted);
-    var result = decipher.finish();
-    console.log(decipher.output.data);
-}
-
-function getFormData($form){
-    var unindexed_array = $form.serializeArray();
-    var indexed_array = {};
-
-    $.map(unindexed_array, function(n, i){
-        indexed_array[n['name']] = n['value'];
-    });
-
-    return indexed_array;
-}
+// I have no idea what this is.
+// function getFormData($form){
+//     var unindexed_array = $form.serializeArray();
+//     var indexed_array = {};
+//
+//     $.map(unindexed_array, function(n, i){
+//         indexed_array[n['name']] = n['value'];
+//     });
+//
+//     return indexed_array;
+// }
 
 function decrypt(encryptedPaste, key, iv) {
     console.log("Decrypting");
     try {
-        var decipher = forge.cipher.createDecipher('AES-CBC', key);
-        decipher.start({iv: iv});
-        decipher.update(forge.util.createBuffer(JSON.parse(encryptedPaste)));
-        var result = decipher.finish()
-        var pastetxt = decipher.output.data;
+        // decrypt
+        // new Int8Array(Object.values(JSON.stringify(iv | paste...)))
     }
     catch (err) {
         console.log(err);
@@ -111,7 +113,7 @@ function download(pastetext) {
     var link = document.getElementById('dwnld');
     console.log("please work");
     console.log(pastetext);
-    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+    link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
         encodeURIComponent(pastetext));
 
     link.setAttribute('dwnld', "paste.txt");
