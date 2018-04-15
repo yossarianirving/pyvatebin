@@ -1,26 +1,45 @@
 function subenc() {
+  var promiseKey = crypto.subtle.generateKey({name: "AES-GCM", length: 256}, true, ['encrypt']);
+  console.log(promiseKey);
+  promiseKey.then(function(value) {
+    console.log(value);
+    encryptSubmit(value)
+  });
+}
+
+function encryptSubmit(key) {
     // create key and iv
-    var key = forge.random.getBytesSync(16);
-    var iv =  forge.random.getBytesSync(16);
     var forme = document.getElementById('submission');
     // storing initialization vector as 'nonce'. yeah I know
-    document.getElementById('nonce').value = iv;
-    var jdata = {};// json data that will be used in ajax
-    jdata.nonce = iv;
+    var pasteToEncrypt = forme.elements["pasteText"].value;
+    var pasteUtf = new TextEncoder().encode(pasteToEncrypt);
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    console.log(iv);
+    var nonce = JSON.stringify(iv);
+    document.getElementById('nonce').value = nonce;
+    var algorithm = { name: 'AES-GCM', iv: iv};
+    // var encrypted = crypto.subtle.encrypt(algorithm, key, pasteUtf);
+    var jdata = {"nonce": iv};// json data that will be used in ajax
     // encrypting the text
-    var pasteContent = forme.elements["pasteText"].value;
-    var cipher = forge.cipher.createCipher('AES-CBC', key);
-    cipher.start({iv: iv});
-    cipher.update(forge.util.createBuffer(
-        pasteContent));
-    cipher.finish();
-    var encrypted = cipher.output;
-    encrypted.push
-    // stores encrypted text
-    jdata.pasteText = JSON.stringify(encrypted);
-    var csrf_token = forme.elements["csrf_token"].value;
-    forme.elements["pasteText"].value = pasteContent;
+    crypto.subtle.encrypt(algorithm, key, pasteUtf).then(function(res) {
+      jdata.pasteText = new Uint8Array(res);
+      console.log(jdata.pasteText);
+      console.log(res);
+      crypto.subtle.exportKey('jwk', key).then(function(x){
+        console.log(x);
+        //decrypt(jdata.pasteText, x.k, jdata.nonce);
+        sendPaste(jdata, x.k);
+      });
+    });
+
+
+}
+
+function sendPaste(jdata, key) {
+  console.log(JSON.stringify(jdata));
+  var forme = document.getElementById('submission');
     // inserts crsf token into headers of ajax request
+    var csrf_token = forme.elements["csrf_token"].value;
     $.ajaxSetup({
        beforeSend: function(xhr, settings) {
            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
@@ -41,7 +60,7 @@ function subenc() {
         $("#text").prop("rows", '')
         link = document.getElementById('link');
         link.innerHTML = window.location.href+response['id']+"#"+escape(key);
-        link.href = response['id']+"#"+escape(key);
+        link.href = response['id']+"#"+key;
         link.style.display = "block";
     },
     error: function (result) {
@@ -50,50 +69,43 @@ function subenc() {
     }
     });
     // testenc(encrypted, key, iv);
+    console.log("Done");
 }
 
-console.log("Check 1… 2… ☭");
 
-function testenc(encrypted, key, iv){
-    console.log("Decrypting...");
-    var decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({iv: iv});
-    decipher.update(encrypted);
-    var result = decipher.finish();
-    console.log(decipher.output.data);
-}
-
-function getFormData($form){
-    var unindexed_array = $form.serializeArray();
-    var indexed_array = {};
-
-    $.map(unindexed_array, function(n, i){
-        indexed_array[n['name']] = n['value'];
-    });
-
-    return indexed_array;
-}
-
-function decrypt(encryptedPaste, key, iv) {
+async function decrypt(encryptedPaste, jwkey, iv) {
+    var key = new Object();
+    var jsonData = JSON.parse(encryptedPaste);
+    var data = new Uint8Array(Object.values(jsonData));
+    key.alg = "A256GCM";
+    key.k = jwkey;
+    key.ext = true;
+    key.key_ops = ['encrypt', 'decrypt'];
+    key.kty = "oct";
     console.log("Decrypting");
-    try {
-        var decipher = forge.cipher.createDecipher('AES-CBC', key);
-        decipher.start({iv: iv});
-        decipher.update(forge.util.createBuffer(JSON.parse(encryptedPaste)));
-        var result = decipher.finish()
-        var pastetxt = decipher.output.data;
-    }
-    catch (err) {
-        console.log(err);
-        return;
-    }
-    // document.getElementById('decpaste').innerHTML = pastetxt;
+    iv = new Uint8Array(Object.values(JSON.parse(iv)));
+    var alg = { name: 'AES-GCM', iv: iv};
+
+    key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
+    await decryptData(alg, key, data);
+    // $(document).ready(function(){
+    //     $("#decpaste").text(pastetxt);
+    // });
+    // console.log(pastetxt);
+    // download(pastetxt);
+
+}
+
+async function decryptData(alg, key, data) {
+  var pastebuff = crypto.subtle.decrypt(alg, key, data);
+  pastebuff.then(function(decryptedPaste){
+    pastetxt = new TextDecoder().decode(decryptedPaste);
     $(document).ready(function(){
         $("#decpaste").text(pastetxt);
     });
     console.log(pastetxt);
     download(pastetxt);
-
+  });
 }
 
 function clone() {
@@ -109,9 +121,7 @@ function clone() {
 
 function download(pastetext) {
     var link = document.getElementById('dwnld');
-    console.log("please work");
-    console.log(pastetext);
-    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+    link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
         encodeURIComponent(pastetext));
 
     link.setAttribute('dwnld', "paste.txt");
