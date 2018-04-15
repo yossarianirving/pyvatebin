@@ -54,11 +54,14 @@ def showpaste(pasteid):
 def submit():
     if request.method == 'POST':
         form = request.get_json(force=True)
-        print(form)
+        pasteText = json.dumps(form['pasteText'])
+        nonce = json.dumps(form['nonce'])
+        # print(type(form['nonce']))
         db = get_db()
         # Creates random 64 bit int
         idAsInt = uuid.uuid4().int >> 65
-        db.execute('insert into pastes (id, paste_text, nonce) values (?, ?, ?)', [idAsInt, form['pasteText'], form['nonce']])
+        db.execute('insert into pastes (id, paste_text, nonce) values (?, ?, ?)', [idAsInt,
+                pasteText, nonce])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
 
