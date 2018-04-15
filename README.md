@@ -15,6 +15,7 @@
 * Burn after reading.
 * Delete after set amount of time.
 * Normal, raw and HTML page rendering.
+* WebCrypto as the cryptographic interface.
 
 # Improvements needed
 
@@ -24,7 +25,7 @@
 
 **Features/enhancements** project might be more current.
 
-# Installation 
+# Installation
 
 Clone the git repository into either a python3 virtualenv or just a regular folder.
 See <https://docs.python.org/3/library/venv.html>
@@ -35,12 +36,12 @@ On Linux:
 
     export FLASK_APP=pyvatebin.py
     export FLASK_DEBUG=true
-    
+
 Enter the `pyvatebin` directory within the project.
-Initialize the SQLite database 
+Initialize the SQLite database
 
     flask initdb
-    
+
 When you are ready to run pyvatebin, use `flask run`
 
 \* Note: `flask run` should only be used for development. See <http://flask.pocoo.org/docs/0.12/deploying/>
