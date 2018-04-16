@@ -59,8 +59,8 @@ function sendPaste(jdata, key) {
         $("#text").prop("disabled", true);
         $("#text").prop("rows", '')
         link = document.getElementById('link');
-        link.innerHTML = window.location.href+response['id']+"#"+escape(key);
         link.href = response['id']+"#"+key;
+        link.innerHTML = link.href;
         link.style.display = "block";
     },
     error: function (result) {
