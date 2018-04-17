@@ -25,7 +25,7 @@ app.config.from_envvar('PYVATEBIN_SETTINGS', silent=True)
 @app.route('/favicon.ico')  # adds favicon. removes an error
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+                        'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -41,7 +41,6 @@ def showpaste(pasteid):
     # Convert hex to int and retrieve from database
     idAsInt = int(pasteid, 16)
     db = get_db()
-    print(idAsInt)
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
     if cur is not None:
         return render_template('showpaste.html', entry=cur, pid=pasteid, form=form)
