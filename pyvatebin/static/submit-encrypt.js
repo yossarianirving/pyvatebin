@@ -38,38 +38,25 @@ function encryptSubmit(key) {
 function sendPaste(jdata, key) {
   console.log(JSON.stringify(jdata));
   var forme = document.getElementById('submission');
-    // inserts crsf token into headers of ajax request
-    var csrf_token = forme.elements["csrf_token"].value;
-    $.ajaxSetup({
-       beforeSend: function(xhr, settings) {
-           if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-               xhr.setRequestHeader("X-CSRFToken", csrf_token);
-           }
-       }
-    });
-    $.ajax({
-    url: "/submit",
-    type: "POST",
-    dataType : 'json',
-    contentType: "application/json",
-    data: JSON.stringify(jdata),
-    success: function (response) {
-        console.log("We did it");
-        console.log(response);
-        $("#text").prop("disabled", true);
-        $("#text").prop("rows", '')
-        link = document.getElementById('link');
-        link.href = response['id']+"#"+key;
-        link.innerHTML = link.href;
-        link.style.display = "block";
-    },
-    error: function (result) {
-        console.log(result);
-        console.log("☹");
+  var csrf_token = forme.elements["csrf_token"].value;
+  fetch('/submit', {
+    method: 'post',
+    body: JSON.stringify(jdata),
+    credentials: 'same-origin',
+    headers: {
+      'content-type': 'application/json',
+      'X-CSRFToken': csrf_token,
     }
-    });
-    // testenc(encrypted, key, iv);
-    console.log("Done");
+  }).then(response => {
+    response.json().then(jres => {
+      console.log("wditit");
+      document.getElementById('text').readOnly = true;
+      link = document.getElementById('link');
+      link.href = jres['id']+"#"+key;
+      link.innerHTML = link.href;
+      link.style.display = "block";
+    })
+  }).catch(error => console.error(error));
 }
 
 
@@ -77,6 +64,7 @@ async function decrypt(encryptedPaste, jwkey, iv) {
     var key = new Object();
     var jsonData = JSON.parse(encryptedPaste);
     var data = new Uint8Array(Object.values(jsonData));
+    // creates JSON WebKey Object
     key.alg = "A256GCM";
     key.k = jwkey;
     key.ext = true;
@@ -88,11 +76,6 @@ async function decrypt(encryptedPaste, jwkey, iv) {
 
     key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
     await decryptData(alg, key, data);
-    // $(document).ready(function(){
-    //     $("#decpaste").text(pastetxt);
-    // });
-    // console.log(pastetxt);
-    // download(pastetxt);
 
 }
 
@@ -100,10 +83,7 @@ async function decryptData(alg, key, data) {
   var pastebuff = crypto.subtle.decrypt(alg, key, data);
   pastebuff.then(function(decryptedPaste){
     pastetxt = new TextDecoder().decode(decryptedPaste);
-    $(document).ready(function(){
-        $("#decpaste").text(pastetxt);
-    });
-    console.log(pastetxt);
+    document.getElementById('decpaste').innerHTML = pastetxt
     download(pastetxt);
   });
 }
@@ -123,6 +103,5 @@ function download(pastetext) {
     var link = document.getElementById('dwnld');
     link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
         encodeURIComponent(pastetext));
-
     link.setAttribute('dwnld', "paste.txt");
 }
