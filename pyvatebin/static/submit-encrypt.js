@@ -31,8 +31,6 @@ function encryptSubmit(key) {
         sendPaste(jdata, x.k);
       });
     });
-
-
 }
 
 function sendPaste(jdata, key) {
@@ -49,7 +47,6 @@ function sendPaste(jdata, key) {
     }
   }).then(response => {
     response.json().then(jres => {
-      console.log("wditit");
       document.getElementById('text').readOnly = true;
       link = document.getElementById('link');
       link.href = jres['id']+"#"+key;
@@ -73,7 +70,6 @@ async function decrypt(encryptedPaste, jwkey, iv) {
     console.log("Decrypting");
     iv = new Uint8Array(Object.values(JSON.parse(iv)));
     var alg = { name: 'AES-GCM', iv: iv};
-
     key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
     await decryptData(alg, key, data);
 
@@ -83,7 +79,10 @@ async function decryptData(alg, key, data) {
   var pastebuff = crypto.subtle.decrypt(alg, key, data);
   pastebuff.then(function(decryptedPaste){
     pastetxt = new TextDecoder().decode(decryptedPaste);
-    document.getElementById('decpaste').innerHTML = pastetxt
+    // this is to prevent XSS and html from rendering
+    var decpaste = document.getElementById('decpaste');
+    var escapedPt = document.createTextNode(pastetxt);
+    decpaste.appendChild(escapedPt);
     download(pastetxt);
   });
 }
@@ -91,12 +90,10 @@ async function decryptData(alg, key, data) {
 function clone() {
     document.getElementById('submission').elements['pasteText'].innerHTML =
         document.getElementById('decpaste').innerHTML;
-
     document.getElementById('decpaste').style.display = "none";
     document.getElementById('text').style.display = "block";
     document.getElementById('clone').style.display = "none";
     document.getElementById('submit').style.display = "block";
-
 }
 
 function download(pastetext) {
