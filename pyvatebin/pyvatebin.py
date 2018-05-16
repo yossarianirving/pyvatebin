@@ -8,7 +8,7 @@ except ImportError:  # needed for "production" server
 import uuid
 import lxml
 import json
-from lxml.html.clean import Cleaner
+import time
 
 # Some of this should be moved to another file
 app = Flask(__name__)
@@ -43,6 +43,15 @@ def showpaste(pasteid):
     db = get_db()
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
     if cur is not None:
+        if cur["expire_time"] < time.time():
+            db.execute('delete from pastes where id = ?', [idAsInt])
+            print("Expired")
+            db.commit()
+            abort(404)
+        if cur["burn_after_read"] == 1:
+            db.execute('delete from pastes where id = ?', [idAsInt])
+            print(cur["burn_after_read"])
+            db.commit()
         return render_template('showpaste.html', entry=cur, pid=pasteid, form=form)
     else:
         print("not found")
@@ -55,12 +64,23 @@ def submit():
         form = request.get_json(force=True)
         pasteText = json.dumps(form['pasteText'])
         nonce = json.dumps(form['nonce'])
+        burnAfterRead  = json.dumps(form['burnAfterRead'])
+        print(burnAfterRead)
+        if burnAfterRead == "true":
+            burnAfterRead = True
+        else:
+            burnAfterRead = False
+        print(burnAfterRead)
+        # Creates Expire time
+        expireTime = json.dumps(form['expire_time'])
+        expireTime = int(time.time()) + int(expireTime)
         # print(type(form['nonce']))
         db = get_db()
         # Creates random 64 bit int
         idAsInt = uuid.uuid4().int >> 65
-        db.execute('insert into pastes (id, paste_text, nonce) values (?, ?, ?)', [idAsInt,
-                pasteText, nonce])
+        db.execute('''insert into pastes (id, paste_text, nonce, 
+                expire_time, burn_after_read) values (?, ?, ?, ?, ?)''', 
+                [idAsInt, pasteText, nonce, expireTime, burnAfterRead])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
 

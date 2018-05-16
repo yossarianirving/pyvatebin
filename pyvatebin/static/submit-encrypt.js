@@ -19,7 +19,11 @@ function encryptSubmit(key) {
     document.getElementById('nonce').value = nonce;
     var algorithm = { name: 'AES-GCM', iv: iv};
     // var encrypted = crypto.subtle.encrypt(algorithm, key, pasteUtf);
-    var jdata = {"nonce": iv};// json data that will be used in ajax
+    console.log(forme.elements["burnAfterRead"].data)
+    var jdata = {"nonce": iv, 
+        "burnAfterRead": forme.elements["burnAfterRead"].checked,
+        "expire_time": parseInt(forme.elements["selfDestructTime"].value)
+      };// json data that will be used in ajax
     // encrypting the text
     crypto.subtle.encrypt(algorithm, key, pasteUtf).then(function(res) {
       jdata.pasteText = new Uint8Array(res);

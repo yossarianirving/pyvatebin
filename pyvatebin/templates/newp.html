@@ -2,6 +2,8 @@
 {% block content %}
 <form method="" name="NewPaste" id="submission"\>
   {{ form.hidden_tag() }}
+  {{ form.burnAfterRead() }}
+  {{ form.selfDestructTime() }}
 <input onclick="subenc(); this.disabled=true"
     value="Submit" class="submit" type="button" ><br><br>
     <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
