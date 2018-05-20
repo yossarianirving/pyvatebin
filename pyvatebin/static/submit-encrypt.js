@@ -10,6 +10,7 @@ function subenc() {
 function encryptSubmit(key) {
     // create key and iv
     var forme = document.getElementById('submission');
+    document.getElementById("submit").style.display = "none";
     // storing initialization vector as 'nonce'. yeah I know
     var pasteToEncrypt = forme.elements["pasteText"].value;
     var pasteUtf = new TextEncoder().encode(pasteToEncrypt);
@@ -96,8 +97,8 @@ function clone() {
         document.getElementById('decpaste').innerHTML;
     document.getElementById('decpaste').style.display = "none";
     document.getElementById('text').style.display = "block";
+    document.getElementById('clone-form').style.display = "inline";
     document.getElementById('clone').style.display = "none";
-    document.getElementById('submit').style.display = "block";
 }
 
 function download(pastetext) {

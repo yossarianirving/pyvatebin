@@ -1,12 +1,19 @@
+astroid==1.6.4
 click==6.7
-Flask==0.12.1
+Flask==1.0.2
 Flask-WTF==0.14.2
-gunicorn==19.7.1
+gunicorn==19.8.1
+isort==4.3.4
 itsdangerous==0.24
-Jinja2==2.9.6
-lxml==3.8.0
+Jinja2==2.10
+lazy-object-proxy==1.3.1
+lxml==4.2.1
 MarkupSafe==1.0
+mccabe==0.6.1
 pkg-resources==0.0.0
+pylint==1.9.0
 -e git+git@github.com:yossarianirving/pyvatebin.git@651199ba7f5cc8c2b2774467301bbf65b14ecbd7#egg=pyvatebin
-Werkzeug==0.12.1
+six==1.11.0
+Werkzeug==0.14.1
+wrapt==1.10.11
 WTForms==2.1

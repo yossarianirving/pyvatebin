@@ -4,10 +4,14 @@
     style="display: block" class="submit" id="clone">
 <!-- this is for the clone feature -->
 <form method="" name="NewPaste" id="submission"\>
-  {{ form.hidden_tag() }}
-<input onclick="subenc(); this.disabled=true" id="submit"
-    value="Submit" class="submit" type="button" style="display: none" ><br><br>
-    <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
+  <div id="clone-form" style="display: none;">
+      {{ form.hidden_tag() }}
+      Burn after read: {{ form.burnAfterRead() }} &nbsp;
+      Expires: {{ form.selfDestructTime(class='expire') }}
+      <input onclick="subenc(); this.disabled=true" id="submit"
+        value="Submit" class="submit" type="button"><br><br>
+  </div>
+  <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
 <!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
 {{ form.pasteText(rows='40', onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}", readonly=false, id="text", style='display: none')}}
 <!-- Should be in a separate file-->

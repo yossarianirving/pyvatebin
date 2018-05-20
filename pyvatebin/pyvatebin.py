@@ -6,7 +6,6 @@ try:
 except ImportError:  # needed for "production" server
     from myForms import NewPaste
 import uuid
-import lxml
 import json
 import time
 
