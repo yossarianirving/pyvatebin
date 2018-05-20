@@ -39,7 +39,10 @@ def showpaste(pasteid):
     # form is for the clone feature.
     form = NewPaste()
     # Convert hex to int and retrieve from database
-    idAsInt = int(pasteid, 16)
+    try:
+        idAsInt = int(pasteid, 16)
+    except Exception:
+        abort(404)
     db = get_db()
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
     if cur is not None:
@@ -65,15 +68,13 @@ def submit():
         pasteText = json.dumps(form['pasteText'])
         nonce = json.dumps(form['nonce'])
         burnAfterRead  = json.dumps(form['burnAfterRead'])
-        print(burnAfterRead)
         if burnAfterRead == "true":
             burnAfterRead = True
         else:
             burnAfterRead = False
-        print(burnAfterRead)
         # Creates Expire time
         expireTime = json.dumps(form['expire_time'])
-        expireTime = int(time.time()) + int(expireTime)
+        expireTime = int(time.time()) + int(expireTime)*60
         # print(type(form['nonce']))
         db = get_db()
         # Creates random 64 bit int
@@ -84,6 +85,10 @@ def submit():
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
@@ -116,3 +121,12 @@ def initdb_command():
     """Initializes the database."""
     init_db()
     print('Database initialized.')
+
+
+@app.cli.command('clean-db')
+def clean_db_command():
+    """Deletes expired pastes"""
+    db = get_db()
+    expiredTime = int(time.time())
+    db.execute('delete from pastes where expire_time < ?',[expiredTime])
+    db.commit()

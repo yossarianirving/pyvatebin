@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <form method="" name="NewPaste" id="submission"\>
-  {{ form.hidden_tag() }}
-  {{ form.burnAfterRead() }}
-  {{ form.selfDestructTime() }}
+  {{ form.hidden_tag() }} &nbsp;
+  Burn after read: {{ form.burnAfterRead() }} &nbsp;
+  Expires: {{ form.selfDestructTime(class='expire') }}
 <input onclick="subenc(); this.disabled=true"
     value="Submit" class="submit" type="button" ><br><br>
     <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
