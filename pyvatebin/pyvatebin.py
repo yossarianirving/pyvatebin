@@ -50,11 +50,8 @@ def showpaste(pasteid):
             print("Expired")
             db.commit()
             abort(404)
-        if cur["burn_after_read"] == 1:
-            db.execute('delete from pastes where id = ?', [idAsInt])
-            print(cur["burn_after_read"])
-            db.commit()
-        return render_template('showpaste.html', entry=cur, pid=pasteid, form=form)
+
+        return render_template('showpaste.html', entry=cur, form=form, pid=pasteid)
     else:
         print("not found")
         abort(404)
@@ -83,6 +80,24 @@ def submit():
                 [idAsInt, pasteText, nonce, expireTime, burnAfterRead])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
+
+
+@app.route('/delete', methods=['POST'])
+def delete_paste():
+    """This deletes the paste if Burn after read is selected"""
+    if request.method == 'POST':
+        form = request.get_json(force=True)
+        # the [1:-1] gets rid of the extra quotes
+        pasteid = int(json.dumps(form["pasteid"])[1:-1], 16)
+        db = get_db()
+        cur = db.execute('select * from pastes where id = ?', [pasteid]).fetchone()
+        if cur is not None:
+            if cur["burn_after_read"] == 1:
+                db.execute('delete from pastes where id = ?', [pasteid])
+                db.commit()
+                print("Paste Deleted")
+        return jsonify('deleted')
+
 
 
 @app.errorhandler(404)

@@ -62,7 +62,7 @@ function sendPaste(jdata, key) {
 }
 
 
-async function decrypt(encryptedPaste, jwkey, iv) {
+async function decrypt(encryptedPaste, jwkey, iv, pid, bar) {
     var key = new Object();
     var jsonData = JSON.parse(encryptedPaste);
     var data = new Uint8Array(Object.values(jsonData));
@@ -76,11 +76,11 @@ async function decrypt(encryptedPaste, jwkey, iv) {
     iv = new Uint8Array(Object.values(JSON.parse(iv)));
     var alg = { name: 'AES-GCM', iv: iv};
     key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
-    await decryptData(alg, key, data);
+    await decryptData(alg, key, data, pid, bar);
 
 }
 
-async function decryptData(alg, key, data) {
+async function decryptData(alg, key, data, pid, bar) {
   var pastebuff = crypto.subtle.decrypt(alg, key, data);
   pastebuff.then(function(decryptedPaste){
     pastetxt = new TextDecoder().decode(decryptedPaste);
@@ -89,7 +89,29 @@ async function decryptData(alg, key, data) {
     var escapedPt = document.createTextNode(pastetxt);
     decpaste.appendChild(escapedPt);
     download(pastetxt);
+    // if paste is to be burned after reading
+    if (bar == "1") {
+      burnPaste(pid)
+    }
   });
+}
+
+function burnPaste(pid) {
+  var forme = document.getElementById('submission');
+  var csrf_token = forme.elements["csrf_token"].value;
+  fetch('/delete', {
+    method: 'post',
+    body: JSON.stringify({"pasteid": pid}),
+    credentials: 'same-origin',
+    headers: {
+      'content-type': 'application/json',
+      'X-CSRFToken': csrf_token,
+    }
+  }).then(response => {
+    response.json().then(jres => {
+      console.log("Paste Burned")
+    })
+  }).catch(error => console.error(error));
 }
 
 function clone() {
