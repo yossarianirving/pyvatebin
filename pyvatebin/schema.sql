@@ -3,5 +3,6 @@ create table pastes (
   expire_time integer,
   paste_text text,
   burn_after_read boolean,
+  paste_hash text,
   nonce text
 );

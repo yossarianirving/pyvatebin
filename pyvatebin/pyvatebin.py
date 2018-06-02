@@ -50,7 +50,6 @@ def showpaste(pasteid):
             print("Expired")
             db.commit()
             abort(404)
-
         return render_template('showpaste.html', entry=cur, form=form, pid=pasteid)
     else:
         print("not found")
@@ -64,6 +63,7 @@ def submit():
         pasteText = json.dumps(form['pasteText'])
         nonce = json.dumps(form['nonce'])
         burnAfterRead  = json.dumps(form['burnAfterRead'])
+        pasteKeyHash = json.dumps(form['hash'])
         if burnAfterRead == "true":
             burnAfterRead = True
         else:
@@ -76,8 +76,8 @@ def submit():
         # Creates random 64 bit int
         idAsInt = uuid.uuid4().int >> 65
         db.execute('''insert into pastes (id, paste_text, nonce, 
-                expire_time, burn_after_read) values (?, ?, ?, ?, ?)''', 
-                [idAsInt, pasteText, nonce, expireTime, burnAfterRead])
+                expire_time, burn_after_read, paste_hash) values (?, ?, ?, ?, ?, ?)''', 
+                [idAsInt, pasteText, nonce, expireTime, burnAfterRead, pasteKeyHash])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
 
@@ -89,14 +89,19 @@ def delete_paste():
         form = request.get_json(force=True)
         # the [1:-1] gets rid of the extra quotes
         pasteid = int(json.dumps(form["pasteid"])[1:-1], 16)
+        pasteHash = json.dumps(form["hash"])
         db = get_db()
         cur = db.execute('select * from pastes where id = ?', [pasteid]).fetchone()
         if cur is not None:
-            if cur["burn_after_read"] == 1:
+            # the hash is compared to make sure the paste was properly decrypted
+            if (cur["burn_after_read"] == 1) and (cur["paste_hash"] == pasteHash):
                 db.execute('delete from pastes where id = ?', [pasteid])
                 db.commit()
                 print("Paste Deleted")
-        return jsonify('deleted')
+                return jsonify('deleted')
+            else:
+                print("Could not authenticate paste")
+        return jsonify('Could not Delete')
 
 
 

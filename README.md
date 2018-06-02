@@ -12,11 +12,12 @@ pyvatebin is the only encrypted pastebin to do so.
 * Clone paste.
 * WebCrypto as the cryptographic interface.
 * Pure Vanilla JS.
+* Burn after reading.
+* Delete after set amount of time.
 
 # Planned Features
 
-* Burn after reading.
-* Delete after set amount of time.
+
 * Normal, raw and HTML page rendering.
 
 # Improvements needed

@@ -33,7 +33,11 @@ function encryptSubmit(key) {
       crypto.subtle.exportKey('jwk', key).then(function(x){
         console.log(x);
         //decrypt(jdata.pasteText, x.k, jdata.nonce);
-        sendPaste(jdata, x.k);
+        concatBufSHA(pasteUtf, x.k).then(h => {
+          console.log(h);
+          jdata.hash = h;
+          sendPaste(jdata, x.k);
+        });
       });
     });
 }
@@ -76,11 +80,11 @@ async function decrypt(encryptedPaste, jwkey, iv, pid, bar) {
     iv = new Uint8Array(Object.values(JSON.parse(iv)));
     var alg = { name: 'AES-GCM', iv: iv};
     key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
-    await decryptData(alg, key, data, pid, bar);
+    await decryptData(alg, key, data, pid, bar, jwkey);
 
 }
 
-async function decryptData(alg, key, data, pid, bar) {
+async function decryptData(alg, key, data, pid, bar, jwkey) {
   var pastebuff = crypto.subtle.decrypt(alg, key, data);
   pastebuff.then(function(decryptedPaste){
     pastetxt = new TextDecoder().decode(decryptedPaste);
@@ -91,17 +95,19 @@ async function decryptData(alg, key, data, pid, bar) {
     download(pastetxt);
     // if paste is to be burned after reading
     if (bar == "1") {
-      burnPaste(pid)
+      concatBufSHA(new TextEncoder().encode(pastetxt), jwkey).then(h => {
+        burnPaste(pid, h);
+      })
     }
   });
 }
 
-function burnPaste(pid) {
+function burnPaste(pid, pHash) {
   var forme = document.getElementById('submission');
   var csrf_token = forme.elements["csrf_token"].value;
   fetch('/delete', {
     method: 'post',
-    body: JSON.stringify({"pasteid": pid}),
+    body: JSON.stringify({"pasteid": pid, "hash": pHash}),
     credentials: 'same-origin',
     headers: {
       'content-type': 'application/json',
@@ -109,7 +115,7 @@ function burnPaste(pid) {
     }
   }).then(response => {
     response.json().then(jres => {
-      console.log("Paste Burned")
+      console.log(jres)
     })
   }).catch(error => console.error(error));
 }
@@ -128,4 +134,20 @@ function download(pastetext) {
     link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
         encodeURIComponent(pastetext));
     link.setAttribute('dwnld', "paste.txt");
+}
+
+// joins the paste text and key, then returns its hash
+async function concatBufSHA(buf1, buf2acii) {
+  var buf2 = new TextEncoder().encode(buf2acii);
+  console.log(buf1.length+buf2.length);
+  var t = new Uint8Array(buf1.length+buf2.length);
+  console.log(t);
+  t.set(new Uint8Array(buf1), 0);
+  t.set(new Uint8Array(buf2), buf1.byteLength);
+  const hBuf = await crypto.subtle.digest('SHA-256', t);
+  // convert ArrayBuffer to Array
+  const hAry = Array.from(new Uint8Array(hBuf));
+  // convert bytes to hex string
+  const hash = hAry.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+  return hash;
 }
