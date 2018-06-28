@@ -127,6 +127,7 @@ function clone() {
     document.getElementById('text').style.display = "block";
     document.getElementById('clone-form').style.display = "inline";
     document.getElementById('clone').style.display = "none";
+    enableTab()
 }
 
 function download(pastetext) {
@@ -151,3 +152,18 @@ async function concatBufSHA(buf1, buf2acii) {
   const hash = hAry.map(b => ('00' + b.toString(16)).slice(-2)).join('');
   return hash;
 }
+
+function enableTab() {
+  var txtArea = document.getElementById('text');
+  txtArea.onkeydown = function(e) {
+      if (e.keyCode === 9) { // tab was pressed
+          var val = this.value;
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
+          this.value = val.substring(0, start) + '\t' + val.substring(end);
+          this.selectionStart = this.selectionEnd = start + 1;
+          return false;
+      }
+  };
+}
+

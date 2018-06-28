@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory, jsonify, abort
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory, jsonify, abort, make_response
 try:
     from .myForms import NewPaste
 except ImportError:  # needed for "production" server
@@ -50,7 +50,9 @@ def showpaste(pasteid):
             print("Expired")
             db.commit()
             abort(404)
-        return render_template('showpaste.html', entry=cur, form=form, pid=pasteid)
+        resp = make_response(render_template('showpaste.html', entry=cur, form=form, pid=pasteid))
+        #resp.headers.set('Content-Security-Policy', "script-src 'self'")
+        return resp
     else:
         print("not found")
         abort(404)
