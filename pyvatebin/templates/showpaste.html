@@ -1,28 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-<input type="button" name="clone" value="Clone" onclick="clone()"
-    style="display: block" class="submit" id="clone">
+<input type="button" name="clone" value="Clone"
+     class="submit" id="clone">
 <!-- this is for the clone feature -->
 <form method="" name="NewPaste" id="submission"\>
-  <div id="clone-form" style="display: none;">
+  <div id="clone-form">
       {{ form.hidden_tag() }}
       Burn after read: {{ form.burnAfterRead() }} &nbsp;
       Expires: {{ form.selfDestructTime(class='expire') }}
-      <input onclick="subenc(); this.disabled=true" id="submit"
+      <input id="submit"
         value="Submit" class="submit" type="button"><br><br>
   </div>
-  <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
+  <a id="link" href="#"></a>
 <!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
-{{ form.pasteText(rows='40', readonly=false, id="text", style='display: none')}}
+{{ form.pasteText(rows='40', readonly=false, id="text")}}
 <!-- Should be in a separate file-->
 {{ form.nonce() }}
 </form>
-<pre class="formated" id="decpaste" style="display: block"></pre>
+<pre class="formated" id="decpaste"></pre>
 <br>
 <!-- the download button. move somewhere new soon -->
 <a href="" id="dwnld">Download for text</a>
 <!-- yes, inline script is bad -->
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ nonce }}">
+    document.getElementById("text").style.display = "none";
+    document.getElementById("clone-form").style.display = "none";
+    document.getElementById("clone").style.display = "block";
+    document.getElementById("decpaste").style.display = "block";
+    document.getElementById("submit").onclick = function(e) {
+        subenc();
+        this.disabled = true;
+    }
+    document.getElementById('clone').onclick = function(e) {
+        clone()
+    }
     var hashkey = window.location.hash.substr(1);
     decrypt({{ entry.paste_text|tojson|safe }}, hashkey, {{ entry.nonce|tojson|safe }}, "{{ pid }}", "{{ entry.burn_after_read }}");
 </script>

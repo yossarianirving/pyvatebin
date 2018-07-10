@@ -8,7 +8,7 @@ except ImportError:  # needed for "production" server
 import uuid
 import json
 import time
-
+from secrets import token_urlsafe
 # Some of this should be moved to another file
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -30,8 +30,10 @@ def favicon():
 @app.route('/', methods=['POST', 'GET'])
 def mainPage():
     form = NewPaste()
-    return render_template('newp.html', form=form)
-
+    nonce = token_urlsafe(16)
+    resp =  make_response(render_template('newp.html', form=form, nonce=nonce))
+    resp.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'nonce-"+nonce+"'")
+    return resp
 
 @app.route('/<pasteid>')
 def showpaste(pasteid):
@@ -50,8 +52,9 @@ def showpaste(pasteid):
             print("Expired")
             db.commit()
             abort(404)
-        resp = make_response(render_template('showpaste.html', entry=cur, form=form, pid=pasteid))
-        #resp.headers.set('Content-Security-Policy', "script-src 'self'")
+        nonce = token_urlsafe(16)
+        resp = make_response(render_template('showpaste.html', entry=cur, form=form, pid=pasteid, nonce=nonce))
+        resp.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'nonce-"+nonce+"'")
         return resp
     else:
         print("not found")
@@ -151,3 +154,4 @@ def clean_db_command():
     expiredTime = int(time.time())
     db.execute('delete from pastes where expire_time < ?',[expiredTime])
     db.commit()
+

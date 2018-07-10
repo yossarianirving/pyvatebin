@@ -4,15 +4,19 @@
   {{ form.hidden_tag() }} &nbsp;
   Burn after read: {{ form.burnAfterRead() }} &nbsp;
   Expires: {{ form.selfDestructTime(class='expire') }}
-<input onclick="subenc(); this.disabled=true"
+<input 
     value="Submit" class="submit" type="button" id="submit"><br><br>
-    <a style="display: none;word-wrap: break-word" id="link" href="#"></a>
+    <a id="link" href="#"></a>
 <!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
 {{ form.pasteText(rows='40', readonly=false, id="text")}}
 <!-- Should be in a separate file-->
 {{ form.nonce() }}
 </form>
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ nonce }}">
   enableTab()
+  document.getElementById("submit").onclick = function(e) {
+    subenc();
+    this.disabled = true;
+  }
 </script>
 {% endblock %}

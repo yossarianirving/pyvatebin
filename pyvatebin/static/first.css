@@ -39,6 +39,11 @@ pre{
   overflow: auto;
 }
 
+link {
+  display: none;
+  word-wrap: break-word;
+}
+
 textarea, .formated {
   border: none; width: 100%;
   resize: none;
