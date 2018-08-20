@@ -45,14 +45,15 @@ link {
 }
 
 textarea, .formated {
-  border: none; width: 100%;
+  border: none; 
+  width: 100%;
   resize: none;
   background: rgb(251, 255, 219);
   font-size: 15px;
   color: rgb(0, 0, 0);
   border-radius: 5px;
   box-shadow: 1px 2px 4px 1px #888888;
-  /*padding: 5px;*/
+  padding-left: 2px;
 }
 
 .submit {
@@ -116,4 +117,17 @@ textarea, .formated {
 .dropdown:hover .dropdown-content {
    display: block;
    /*height: 5px;*/
+}
+
+/* Change buttons to active */
+.btn-active {
+  background: green;
+}
+
+#previewPaste {
+  display: none;
+  border: black;
+  background-color: #f1f1ff;
+  border-radius: 5px;
+  padding-left: 2px;
 }

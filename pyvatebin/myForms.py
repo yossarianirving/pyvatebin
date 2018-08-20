@@ -9,4 +9,6 @@ class NewPaste(FlaskForm):
     # (expire time in minutes, label)
     destructChoices = [('3600', ' '), ('1', '1m'), ('5', '5m'), ('10', '10m'), ('30', '30m'), ('60', '1h'), ('300', '5h'),('1440', '1d')]
     selfDestructTime = SelectField('selfDestructTime', choices=destructChoices)
+    typeChoices = [('txt', 'Plain Text'), ('md', 'Markdown')]
+    pasteType = SelectField('pasteType', choices=typeChoices)
     burnAfterRead = BooleanField('burnAfterRead', default=False)

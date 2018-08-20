@@ -76,13 +76,15 @@ def submit():
         # Creates Expire time
         expireTime = json.dumps(form['expire_time'])
         expireTime = int(time.time()) + int(expireTime)*60
+        # set paste type
+        pasteType = json.dumps(form['pasteType'])[1:-1] # cuts "'" out
         # print(type(form['nonce']))
         db = get_db()
         # Creates random 64 bit int
         idAsInt = uuid.uuid4().int >> 65
         db.execute('''insert into pastes (id, paste_text, nonce, 
-                expire_time, burn_after_read, paste_hash) values (?, ?, ?, ?, ?, ?)''', 
-                [idAsInt, pasteText, nonce, expireTime, burnAfterRead, pasteKeyHash])
+                expire_time, burn_after_read, paste_hash, paste_format) values (?, ?, ?, ?, ?, ?, ?)''', 
+                [idAsInt, pasteText, nonce, expireTime, burnAfterRead, pasteKeyHash, pasteType])
         db.commit()  # add text to sqlite3 db
         return jsonify(id=hex(idAsInt)[2:])
 

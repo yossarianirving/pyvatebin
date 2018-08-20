@@ -3,14 +3,19 @@
 <form method="" name="NewPaste" id="submission"\>
   {{ form.hidden_tag() }} &nbsp;
   Burn after read: {{ form.burnAfterRead() }} &nbsp;
-  Expires: {{ form.selfDestructTime(class='expire') }}
+  Expires: {{ form.selfDestructTime(class='expire') }} &nbsp; 
+  Format: {{ form.pasteType() }} &nbsp;
 <input 
     value="Submit" class="submit" type="button" id="submit"><br><br>
     <a id="link" href="#"></a>
-<!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
-{{ form.pasteText(rows='40', readonly=false, id="text")}}
-<!-- Should be in a separate file-->
-{{ form.nonce() }}
+  <div class="mdtxt">
+    <button id="editor" class="btn-active" type="button">Editor</button>
+    <button id="preview" class="" type="button">Preview</button>
+  </div>
+  {{ form.pasteText(rows='40', readonly=false, id="text")}}
+  {{ form.nonce() }}
+  <!-- preview div -->
+  <div id="previewPaste"></div>
 </form>
 <script type="text/javascript" nonce="{{ nonce }}">
   enableTab()
@@ -18,5 +23,7 @@
     subenc();
     this.disabled = true;
   }
+  document.getElementById("editor").onclick = function(e) { toEdit() };
+  document.getElementById("preview").onclick = function(e) { toPreview(); };
 </script>
 {% endblock %}

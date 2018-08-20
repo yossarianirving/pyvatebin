@@ -7,9 +7,14 @@
   <div id="clone-form">
       {{ form.hidden_tag() }}
       Burn after read: {{ form.burnAfterRead() }} &nbsp;
-      Expires: {{ form.selfDestructTime(class='expire') }}
+      Expires: {{ form.selfDestructTime(class='expire') }} &nbsp;
+      Format: {{ form.pasteType() }} &nbsp;
       <input id="submit"
         value="Submit" class="submit" type="button"><br><br>
+    <div class="mdtxt">
+        <button id="editor" class="btn-active" type="button">Editor</button>
+        <button id="preview" class="" type="button">Preview</button>
+    </div>
   </div>
   <a id="link" href="#"></a>
 <!-- <div class=paste><textarea name=paste rows=40></textarea></div> -->
@@ -18,10 +23,10 @@
 {{ form.nonce() }}
 </form>
 <pre class="formated" id="decpaste"></pre>
+<div id="previewPaste"></div>
 <br>
 <!-- the download button. move somewhere new soon -->
 <a href="" id="dwnld">Download for text</a>
-<!-- yes, inline script is bad -->
 <script type="text/javascript" nonce="{{ nonce }}">
     document.getElementById("text").style.display = "none";
     document.getElementById("clone-form").style.display = "none";
@@ -34,7 +39,9 @@
     document.getElementById('clone').onclick = function(e) {
         clone()
     }
+    document.getElementById("editor").onclick = function(e) { toEdit() };
+    document.getElementById("preview").onclick = function(e) { toPreview(); };
     var hashkey = window.location.hash.substr(1);
-    decrypt({{ entry.paste_text|tojson|safe }}, hashkey, {{ entry.nonce|tojson|safe }}, "{{ pid }}", "{{ entry.burn_after_read }}");
+    decrypt({{ entry.paste_text|tojson|safe }}, hashkey, {{ entry.nonce|tojson|safe }}, "{{ pid }}", "{{ entry.burn_after_read }}", "{{ entry.paste_format }}");
 </script>
 {% endblock %}

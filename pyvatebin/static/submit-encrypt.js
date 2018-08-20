@@ -23,7 +23,8 @@ function encryptSubmit(key) {
     console.log(forme.elements["burnAfterRead"].data)
     var jdata = {"nonce": iv, 
         "burnAfterRead": forme.elements["burnAfterRead"].checked,
-        "expire_time": parseInt(forme.elements["selfDestructTime"].value)
+        "expire_time": parseInt(forme.elements["selfDestructTime"].value),
+        "pasteType": forme.elements["pasteType"].value
       };// json data that will be used in ajax
     // encrypting the text
     crypto.subtle.encrypt(algorithm, key, pasteUtf).then(function(res) {
@@ -66,33 +67,42 @@ function sendPaste(jdata, key) {
 }
 
 
-async function decrypt(encryptedPaste, jwkey, iv, pid, bar) {
-    var key = new Object();
-    var jsonData = JSON.parse(encryptedPaste);
-    var data = new Uint8Array(Object.values(jsonData));
-    // creates JSON WebKey Object
-    key.alg = "A256GCM";
-    key.k = jwkey;
-    key.ext = true;
-    key.key_ops = ['encrypt', 'decrypt'];
-    key.kty = "oct";
-    console.log("Decrypting");
-    iv = new Uint8Array(Object.values(JSON.parse(iv)));
-    var alg = { name: 'AES-GCM', iv: iv};
-    key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
-    await decryptData(alg, key, data, pid, bar, jwkey);
-
+async function decrypt(encryptedPaste, jwkey, iv, pid, bar, paste_type) {
+  var key = new Object();
+  var jsonData = JSON.parse(encryptedPaste);
+  var data = new Uint8Array(Object.values(jsonData));
+  // creates JSON WebKey Object
+  key.alg = "A256GCM";
+  key.k = jwkey;
+  key.ext = true;
+  key.key_ops = ['encrypt', 'decrypt'];
+  key.kty = "oct";
+  console.log("Decrypting");
+  iv = new Uint8Array(Object.values(JSON.parse(iv)));
+  var alg = { name: 'AES-GCM', iv: iv};
+  key = await crypto.subtle.importKey("jwk", key, alg, true, ['encrypt', 'decrypt']);
+  await decryptData(alg, key, data, pid, bar, jwkey);
+  if (paste_type == "md") {
+    var prevPaste = document.getElementById('previewPaste');
+    var text = document.getElementById('decpaste');
+    text.style.display = "none";
+    converter = new showdown.Converter({tables: true});
+    prevPaste.innerHTML = converter.makeHtml(text.innerHTML);
+    prevPaste.style.display = "block";
+    console.log("Showing Markdown");
+  }
 }
 
 async function decryptData(alg, key, data, pid, bar, jwkey) {
   var pastebuff = crypto.subtle.decrypt(alg, key, data);
-  pastebuff.then(function(decryptedPaste){
+  await pastebuff.then(function(decryptedPaste){
     pastetxt = new TextDecoder().decode(decryptedPaste);
     // this is to prevent XSS and html from rendering
     var decpaste = document.getElementById('decpaste');
     var escapedPt = document.createTextNode(pastetxt);
     decpaste.appendChild(escapedPt);
     download(pastetxt);
+    console.log("Decrypted");
     // if paste is to be burned after reading
     if (bar == "1") {
       concatBufSHA(new TextEncoder().encode(pastetxt), jwkey).then(h => {
@@ -167,3 +177,21 @@ function enableTab() {
   };
 }
 
+function toEdit() {
+  document.getElementById('text').style.display = "block";
+  document.getElementById('editor').classList = ['btn-active'];
+  document.getElementById('preview').classList = [''];
+  console.log("Editing");
+}
+
+function toPreview() {
+  var prevPaste = document.getElementById('previewPaste');
+  var text = document.getElementById('text');
+  text.style.display = "none";
+  document.getElementById('editor').classList = [''];
+  document.getElementById('preview').classList = ['btn-active'];
+  converter = new showdown.Converter({tables: true});
+  prevPaste.innerHTML = converter.makeHtml(text.value);
+  prevPaste.style.display = "block";
+  console.log("previewing");
+}

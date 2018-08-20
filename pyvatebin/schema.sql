@@ -4,5 +4,6 @@ create table pastes (
   paste_text text,
   burn_after_read boolean,
   paste_hash text,
+  paste_format text,
   nonce text
 );
