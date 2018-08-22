@@ -87,9 +87,11 @@ async function decrypt(encryptedPaste, jwkey, iv, pid, bar, paste_type) {
     var text = document.getElementById('decpaste');
     text.style.display = "none";
     converter = new showdown.Converter({tables: true});
-    prevPaste.innerHTML = converter.makeHtml(text.innerHTML);
+    prevPaste.innerHTML = converter.makeHtml(text.innerText);
     prevPaste.style.display = "block";
     console.log("Showing Markdown");
+    // sets paste type to markdown
+    document.getElementById('pasteType').value = 'md';
   }
 }
 
@@ -178,20 +180,36 @@ function enableTab() {
 }
 
 function toEdit() {
+  // display the text entry
   document.getElementById('text').style.display = "block";
-  document.getElementById('editor').classList = ['btn-active'];
-  document.getElementById('preview').classList = [''];
+  document.getElementById('editor').classList = ['btn-active button'];
+  document.getElementById('preview').classList = ['button'];
   console.log("Editing");
 }
 
 function toPreview() {
   var prevPaste = document.getElementById('previewPaste');
   var text = document.getElementById('text');
+  var pasteType = document.getElementById('pasteType').value;
   text.style.display = "none";
-  document.getElementById('editor').classList = [''];
-  document.getElementById('preview').classList = ['btn-active'];
-  converter = new showdown.Converter({tables: true});
-  prevPaste.innerHTML = converter.makeHtml(text.value);
+  // removes the preview's TextNode if it exists
+  if (prevPaste.firstChild != null) {
+    prevPaste.removeChild(prevPaste.firstChild);
+  }
+  // fixes the markdown not being removed
+  prevPaste.innerHTML = "";
+  document.getElementById('editor').classList = ['button'];
+  document.getElementById('preview').classList = ['btn-active button'];
+  // if the format is markdown
+  if (pasteType == "md") {
+    converter = new showdown.Converter({tables: true});
+    prevPaste.innerHTML = converter.makeHtml(text.value);
+  }
+  // if format is plain text
+  else if (pasteType == 'txt') {
+    var escapedPrev = document.createTextNode(text.value);
+    prevPaste.appendChild(escapedPrev);
+  }
   prevPaste.style.display = "block";
   console.log("previewing");
 }

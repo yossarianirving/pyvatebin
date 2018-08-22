@@ -19,7 +19,7 @@
 }
 
 body{
-  margin:40px auto;max-width: 700px;
+  margin:40px auto;max-width: 900px;
   line-height: 1.6; font-size: 18px;
   padding: 0 10px;
   font-family: "Open Sans", Ariel;
@@ -121,13 +121,15 @@ textarea, .formated {
 
 /* Change buttons to active */
 .btn-active {
-  background: green;
+  background: none;
+  color: black;
 }
 
 #previewPaste {
   display: none;
   border: black;
   background-color: #f1f1ff;
+  color: black;
   border-radius: 5px;
   padding-left: 2px;
 }
