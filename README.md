@@ -1,7 +1,6 @@
 # pyvatebin
 **Pyvatebin** is a simple pastebin written in python using the Flask framework.
-It uses the WebCrypto API to encrypt and decrypt the pastes. To my knowledge,
-pyvatebin is the only encrypted pastebin to do so.
+It uses the WebCrypto API to encrypt and decrypt the pastes. 
 
 # Current Features
 
@@ -11,7 +10,7 @@ pyvatebin is the only encrypted pastebin to do so.
 * Server has no knowledge of paste content.
 * Clone paste.
 * WebCrypto as the cryptographic interface.
-* Pure Vanilla JS.
+* Markdown rendering.
 * Burn after reading.
 * Delete after set amount of time.
 

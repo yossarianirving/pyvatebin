@@ -182,6 +182,7 @@ function enableTab() {
 function toEdit() {
   // display the text entry
   document.getElementById('text').style.display = "block";
+  document.getElementById('previewPaste').style.display = "none";
   document.getElementById('editor').classList = ['btn-active button'];
   document.getElementById('preview').classList = ['button'];
   console.log("Editing");
@@ -207,8 +208,10 @@ function toPreview() {
   }
   // if format is plain text
   else if (pasteType == 'txt') {
+    var pre = document.createElement("PRE");
     var escapedPrev = document.createTextNode(text.value);
-    prevPaste.appendChild(escapedPrev);
+    pre.appendChild(escapedPrev);
+    prevPaste.appendChild(pre);
   }
   prevPaste.style.display = "block";
   console.log("previewing");
