@@ -157,3 +157,12 @@ def clean_db_command():
     db.execute('delete from pastes where expire_time < ?',[expiredTime])
     db.commit()
 
+@app.cli.command('vacuum')
+def vaccum_db():
+    """Delete and Vacuum pastes"""
+    db = get_db()
+    expiredTime = int(time.time())
+    db.execute('delete from pastes where expire_time < ?',[expiredTime])
+    db.commit()
+    db.execute('vacuum')
+    db.commit()
