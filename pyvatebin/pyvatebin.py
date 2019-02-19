@@ -29,6 +29,9 @@ def favicon():
 
 @app.route('/', methods=['POST', 'GET'])
 def mainPage():
+    """Main page of the site
+    :returns: Main page with textbox and options for paste
+    """
     form = NewPaste()
     nonce = token_urlsafe(16)
     resp =  make_response(render_template('newp.html', form=form, nonce=nonce))
@@ -37,6 +40,10 @@ def mainPage():
 
 @app.route('/<pasteid>')
 def showpaste(pasteid):
+    """Returns the encrypted paste if it isn't expired
+    :param pasteid: a hexadecimal string representing the id of the paste
+    :returns: returns the encrypted paste if it is still valid and a 404 page if not
+    """
     # form is for the clone feature.
     form = NewPaste()
     # Convert hex to int and retrieve from database
@@ -46,7 +53,7 @@ def showpaste(pasteid):
         abort(404)
     db = get_db()
     cur = db.execute('select * from pastes where id = ?', [idAsInt]).fetchone()
-    if cur is not None:
+    if cur:
         if cur["expire_time"] < time.time():
             db.execute('delete from pastes where id = ?', [idAsInt])
             print("Expired")
@@ -63,6 +70,7 @@ def showpaste(pasteid):
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    """Receives the new paste and stores it in the database."""
     if request.method == 'POST':
         form = request.get_json(force=True)
         pasteText = json.dumps(form['pasteText'])
@@ -99,7 +107,7 @@ def delete_paste():
         pasteHash = json.dumps(form["hash"])
         db = get_db()
         cur = db.execute('select * from pastes where id = ?', [pasteid]).fetchone()
-        if cur is not None:
+        if cur:
             # the hash is compared to make sure the paste was properly decrypted
             if (cur["burn_after_read"] == 1) and (cur["paste_hash"] == pasteHash):
                 db.execute('delete from pastes where id = ?', [pasteid])
