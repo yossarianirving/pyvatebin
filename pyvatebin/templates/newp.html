@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 <form method="" name="NewPaste" id="submission"\>
-  {{ form.hidden_tag() }} &nbsp;
-  Burn after read: {{ form.burnAfterRead() }} &nbsp;
-  Expires: {{ form.selfDestructTime(class='expire') }} &nbsp; 
-  Format: {{ form.pasteType() }} &nbsp;
-<input 
-    value="Submit" class="submit" type="button" id="submit"><br><br>
+    <button id='showOptions' class="button" type="button">+</button>
+    <input value="Submit" class="submit" type="button" id="submit">
+  <div id="pasteOptions" class="dsktp-ptns">
+    <ul>
+      {{ form.hidden_tag() }} &nbsp;
+      <li>Burn after read: {{ form.burnAfterRead() }}</li>
+      <li>Expires: {{ form.selfDestructTime(class='expire') }} &nbsp; </li>
+      <li>Format: {{ form.pasteType() }} &nbsp;</li>
+      <li></li>  
+    </ul>
+  </div>
+    <br><br>
     <a id="link" href="#"></a>
   <div class="mdtxt">
     <button id="editor" class="btn-active button" type="button">Editor</button>
@@ -25,5 +31,19 @@
   }
   document.getElementById("editor").onclick = function(e) { toEdit() };
   document.getElementById("preview").onclick = function(e) { toPreview(); };
+  setOptions();
+  window.onresize = setOptions;
+  document.getElementById('showOptions').onclick = function(e) {
+    var pasteOpt = document.getElementById('pasteOptions');
+    if (pasteOpt.style.display == "none") {
+      pasteOpt.style.display = "";
+      document.getElementById('showOptions').innerHTML = "-";
+    }
+    else {
+      pasteOpt.style.display = "none";
+      document.getElementById('showOptions').innerHTML = "+";
+
+    }
+  }
 </script>
 {% endblock %}

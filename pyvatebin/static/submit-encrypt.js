@@ -216,3 +216,16 @@ function toPreview() {
   prevPaste.style.display = "block";
   console.log("previewing");
 }
+
+function setOptions() {
+  if (window.innerWidth <= 720) {
+    document.getElementById('pasteOptions').classList = ['mobile-ptns'];
+    document.getElementById('pasteOptions').style.display = "none";
+    document.getElementById('showOptions').style.display = ""
+  }
+  else {
+    document.getElementById('pasteOptions').classList = ['dsktp-ptns'];
+    document.getElementById('pasteOptions').style.display = "";
+    document.getElementById('showOptions').style.display = "none";
+  }
+}
